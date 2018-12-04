@@ -1,0 +1,37 @@
+{% extends "header.html" %}
+{% block body %}
+  <div class="container-fluid">
+    <div class="jumbotron mt-3 p-5" style="position: relative">
+      <a href="/" role="button" class="btn btn-sm btn-default" style="position: absolute; top: 12px; left: 12px;"><span class="fa fa-home"></span></a>
+      <h1 class="display-4">Transfers</h1>
+      <p class="lead">Here you can view your transfers.</p>
+      <!-- <a class="btn btn-primary" data-toggle="modal" data-target="#addProduct" href="#" role="button">Add a product</a> -->
+    </div>
+    <div class="container-fluid">
+        <table id="transferTable" class="table table-borderless table-sm" cellspacing="0" width="100%">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Product ID</th>
+              <th>Quantity</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for transfer in transfers %}
+              <tr>
+                <td>{{ transfer['tid'] }}</td>
+                <td>{{ transfer['pid'] }}</td>
+                <td>{{ transfer['tqty'] }}</td>
+                <td>{{ transfer['tfrom'] }}</td>
+                <td>{{ transfer['tto'] }}</td>
+                <td>{{ transfer['timestmp'] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  </div>
+{% endblock %}

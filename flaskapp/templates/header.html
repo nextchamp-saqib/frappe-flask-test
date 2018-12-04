@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Frappe Inventory Demo</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+</head>
+<body class="container-fluid" style="margin: 0 20%; max-width:60%">
+  {% for message in get_flashed_messages() %}
+    <div class="container-fluid">
+      <div class="alert alert-primary mt-3 alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+  {% endfor %}
+  {% block body %}
+  {% endblock %}
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+  <script>
+
+    $(document).ready(function() {
+      $('#productTable').DataTable();
+      $('#warehouseTable').DataTable();
+      $('#transferTable').DataTable();
+    });
+    $('.editProduct').on('click', function (e) {
+      var pid = $(this).data('pid')
+      var pname = $(this).data('pname')
+      var pqty = $(this).data('pqty')
+      $('#editProduct #pID').val(pid);
+      $('#editProduct #pName').val(pname);
+      $('#editProduct #pQty').val(pqty);
+    })
+    $('.transferProduct').on('click', function (e) {
+      var pid = $(this).data('pid')
+      var pqty = $(this).data('pqty')
+      $('#transferProduct #pID').val(pid);
+      $('#transferProduct #tQty').val(pqty);
+    })
+    $('.editWarehouse').on('click', function (e) {
+      var wid = $(this).data('wid')
+      var wname = $(this).data('wname')
+      var wloc = $(this).data('wloc')
+      $('#editWarehouse #wID').val(wid);
+      $('#editWarehouse #wName').val(wname);
+      $('#editWarehouse #wLoc').val(wloc);
+    })
+    $('.transferWarehouse').on('click', function (e) {
+      var pid = $(this).data('pid')
+      var pqty = $(this).data('pqty')
+      var wname = $(this).data('wname')
+      var wid = $(this).data('wid')
+      $('#transferWarehouse #pID').val(pid);
+      $('#transferWarehouse #pQty').val(pqty);
+      $('#transferWarehouse #wID').val(wid);
+      $('#transferWarehouse #tFrom').val(wname);
+    })
+  </script>
+</body>
+</html>

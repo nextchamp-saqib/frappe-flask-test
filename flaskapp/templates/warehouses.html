@@ -1,0 +1,162 @@
+{% extends "header.html" %}
+{% block body %}
+  <div class="container-fluid">
+    <div class="jumbotron mt-3 p-5" style="position: relative;">
+      <a href="/" role="button" class="btn btn-sm btn-default" style="position: absolute; top: 12px; left: 12px;"><span class="fa fa-home"></span></a>
+      <h1 class="display-4">Warehouses</h1>
+      <p class="lead">You can add, edit and view details of your warehouses.</p>
+      <a class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addWarehouse" href="#" role="button">Add new warehouse</a>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <table id="warehouseTable" class="table table-sm table-borderless" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Location</th>
+          <th>Product ID</th>
+          <th>Qty</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for warehouse in warehouses %}
+          <tr>
+            <td>{{ warehouse['wid'] }}</td>
+            <td>{{ warehouse['wname'] }}</td>
+            <td>{{ warehouse['wloc'] }}</td>
+            <td>{{ warehouse['pid'] }}</td>
+            <td>{{ warehouse['pqty'] }}</td>
+            <td>
+              <button class="editWarehouse btn btn-sm btn-outline-info" data-toggle="modal" data-target="#editWarehouse" data-wid="{{ warehouse['wid'] }}" data-wloc="{{ warehouse['wloc'] }}" data-wname="{{ warehouse['wname'] }}">Edit</button>
+
+              <button class="transferWarehouse btn btn-sm btn-outline-success" data-toggle="modal" data-target="#transferWarehouse" data-wid="{{ warehouse['wid'] }}" data-wname="{{ warehouse['wname'] }}" data-pid="{{ warehouses['pid'] }}" data-pqty="{{ warehouses['pqty'] }}">Transfer</button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="modal fade" id="addWarehouse" tabindex="-1" role="dialog" aria-labelledby="addWarehouseLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Enter new warehouse's details</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body p-4">
+              <form action="/warehouses/" method="POST">
+                <div class="form-group">
+                  <label for="wID" class="">ID</label>
+                  <div class="">
+                    <input type="text" class="form-control" id="wID" name="w_id">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="wName" class="">Name</label>
+                  <div class="">
+                    <input type="text" class="form-control" id="wName" name="w_name">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="wLoc" class="">Location</label>
+                  <div class="">
+                    <input type="text" class="form-control" id="wLoc" name="w_loc">
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2 mt-2">Done</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="editWarehouse" tabindex="-1" role="dialog" aria-labelledby="editWarehouseLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Change warehouse's details</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body p-4">
+              <form action="/warehouses/edit/" method="POST">
+                <div class="form-group">
+                  <label for="wID" class="">ID</label>
+                  <div class="">
+                    <input type="text" readonly class="form-control" id="wID" name="w_id">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="wName" class="">Name</label>
+                  <div class="">
+                    <input type="text" class="form-control" id="wName" name="w_name">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="wLoc" class="">Location</label>
+                  <div class="">
+                    <input type="text" class="form-control" id="wLoc" name="w_loc">
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2 mt-2">Done</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="transferWarehouse" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Transfer product</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body p-4">
+              <form action="/transfers/" method="POST">
+                <div class="form-group">
+                  <label for="wID" class="">Warehouse ID</label>
+                  <div class="">
+                    <input type="text" readonly class="form-control" id="wID" name="w_id">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="pID" class="">Product ID</label>
+                  <div class="">
+                    <input type="text" readonly class="form-control" id="pID" name="p_id">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="pQty" class="">Quantity</label>
+                  <div class="">
+                    <input type="number" class="form-control" id="pQty" name="t_qty">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="tFrom" class="">From</label>
+                  <div class="">
+                    <input type="text" readonly class="form-control" id="tFrom" name="t_from">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="tTo" class="">To</label>
+                  <div class="">
+                    <select class="form-control" id="tTo" name="t_to">
+                      {% for warehouse in warehouses %}
+                      <option value="{{ warehouse['wid'] }}">{{ warehouse['wname'] }} - {{ warehouse['wloc'] }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2 mt-2">Done</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+{% endblock %}
