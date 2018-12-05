@@ -35,17 +35,15 @@
       $('#transferTable').DataTable();
     });
     $('.editProduct').on('click', function (e) {
-      var pid = $(this).data('pid')
       var pname = $(this).data('pname')
       var pqty = $(this).data('pqty')
-      $('#editProduct #pID').val(pid);
       $('#editProduct #pName').val(pname);
       $('#editProduct #pQty').val(pqty);
     })
     $('.transferProduct').on('click', function (e) {
-      var pid = $(this).data('pid')
+      var pname = $(this).data('pname')
       var pqty = $(this).data('pqty')
-      $('#transferProduct #pID').val(pid);
+      $('#transferProduct #pName').val(pname);
       $('#transferProduct #tQty').val(pqty);
     })
     $('.editWarehouse').on('click', function (e) {
@@ -57,14 +55,14 @@
       $('#editWarehouse #wLoc').val(wloc);
     })
     $('.transferWarehouse').on('click', function (e) {
-      var pid = $(this).data('pid')
+      var pname = $(this).data('pname')
       var pqty = $(this).data('pqty')
       var wname = $(this).data('wname')
       var wid = $(this).data('wid')
-      $('#transferWarehouse #pID').val(pid);
-      $('#transferWarehouse #pQty').val(pqty);
-      $('#transferWarehouse #wID').val(wid);
-      $('#transferWarehouse #tFrom').val(wname);
+      $('#transferWarehouse #pName_t').val(pname);
+      $('#transferWarehouse #pQty_t').val(pqty);
+      $('#transferWarehouse #wID_t').val(wid);
+      $('#transferWarehouse #tFrom_t').val(wname);
     })
   </script>
 </body>

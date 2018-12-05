@@ -1,8 +1,8 @@
 {% extends "header.html" %}
 {% block body %}
   <div class="container-fluid">
-    <div class="jumbotron mt-3 p-5" style="position: relative">
-      <a href="/" role="button" class="btn btn-sm btn-default" style="position: absolute; top: 12px; left: 12px;"><span class="fa fa-home"></span></a>
+    <div class="jumbotron mt-3 p-4" style="position: relative;">
+      <a href="/" role="button" class="btn btn-sm btn-default" style="position: absolute; top: 6px; right: 6px;"><span class="fa fa-home"></span></a>
       <h1 class="display-4">Transfers</h1>
       <p class="lead">Here you can view your transfers.</p>
       <!-- <a class="btn btn-primary" data-toggle="modal" data-target="#addProduct" href="#" role="button">Add a product</a> -->
@@ -12,7 +12,7 @@
           <thead>
             <tr>
               <th>ID</th>
-              <th>Product ID</th>
+              <th>Product</th>
               <th>Quantity</th>
               <th>From</th>
               <th>To</th>
@@ -23,7 +23,7 @@
             {% for transfer in transfers %}
               <tr>
                 <td>{{ transfer['tid'] }}</td>
-                <td>{{ transfer['pid'] }}</td>
+                <td>{{ transfer['pname'] }}</td>
                 <td>{{ transfer['tqty'] }}</td>
                 <td>{{ transfer['tfrom'] }}</td>
                 <td>{{ transfer['tto'] }}</td>

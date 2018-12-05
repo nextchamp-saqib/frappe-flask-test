@@ -1,8 +1,8 @@
 {% extends "header.html" %}
 {% block body %}
   <div class="container-fluid">
-    <div class="jumbotron mt-3 p-5" style="position: relative">
-      <a href="/" role="button" class="btn btn-sm btn-default" style="position: absolute; top: 12px; left: 12px;"><span class="fa fa-home"></span></a>
+    <div class="jumbotron mt-3 p-4" style="position: relative;">
+      <a href="/" role="button" class="btn btn-sm btn-default" style="position: absolute; top: 6px; right: 6px;"><span class="fa fa-home"></span></a>
       <h1 class="display-4">Products</h1>
       <p class="lead">You can add, edit and view your products.</p>
       <a class="btn btn-primary" data-toggle="modal" data-target="#addProduct" href="#" role="button">Add a product</a>
@@ -12,8 +12,7 @@
     <table id="productTable" class="table table-borderless table-sm" cellspacing="0" width="100%">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Name</th>
+          <th>Product</th>
           <th>Quantity</th>
           <th>Action</th>
         </tr>
@@ -21,13 +20,12 @@
       <tbody>
         {% for product in products %}
           <tr>
-            <td>{{ product['pid'] }}</td>
             <td>{{ product['pname'] }}</td>
             <td>{{ product['pqty'] }}</td>
             <td>
-              <button class="editProduct btn btn-sm btn-outline-info" data-toggle="modal" data-target="#editProduct" data-pid="{{ product['pid'] }}" data-pqty="{{ product['pqty'] }}" data-pname="{{ product['pname'] }}">Edit</button>
+              <button class="editProduct btn btn-sm btn-outline-info" data-toggle="modal" data-target="#editProduct" data-pqty="{{ product['pqty'] }}" data-pname="{{ product['pname'] }}">Edit</button>
 
-              <button class="transferProduct btn btn-sm btn-outline-success"  data-toggle="modal" data-target="#transferProduct" data-pid="{{ product['pid'] }}" data-pqty="{{ product['pqty'] }}" >Transfer</button>
+              <button class="transferProduct btn btn-sm btn-outline-success"  data-toggle="modal" data-target="#transferProduct" data-pname="{{ product['pname'] }}" data-pqty="{{ product['pqty'] }}" >Transfer</button>
             </td>
           </tr>
         {% endfor %}
@@ -37,7 +35,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Enter new product's details</h5>
+            <h5 class="modal-title" id="exampleModalLabel">Add new product</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -45,15 +43,10 @@
           <div class="modal-body p-4">
             <form action="/products/" method="POST">
               <div class="form-group">
-                <label for="pID" class="">ID</label>
-                <div class="">
-                  <input type="text" class="form-control" id="pID" name="p_id">
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="pName" class="">Name</label>
+                <label for="pName" class="">Product</label>
                 <div class="">
                   <input type="text" class="form-control" id="pName" name="p_name">
+                  <small class="form-text text-muted">Name cannot be edited or changed in future.</small>
                 </div>
               </div>
               <div class="form-group">
@@ -80,15 +73,9 @@
             <div class="modal-body p-4">
               <form action="/products/edit/" method="POST">
                 <div class="form-group">
-                  <label for="pID" class="">ID</label>
+                  <label for="pName" class="">Product</label>
                   <div class="">
-                    <input type="text" readonly class="form-control" id="pID" name="p_id">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="pName" class="">Name</label>
-                  <div class="">
-                    <input type="text" class="form-control" id="pName" name="p_name">
+                    <input type="text" readonly class="form-control" id="pName" name="p_name">
                   </div>
                 </div>
                 <div class="form-group">
@@ -115,15 +102,16 @@
             <div class="modal-body p-4">
               <form action="/transfers/" method="POST">
                 <div class="form-group">
-                  <label for="pID" class="">ID</label>
+                  <label for="pName" class="">Product</label>
                   <div class="">
-                    <input type="text" readonly class="form-control" id="pID" name="p_id">
+                    <input type="text" readonly class="form-control" id="pName" name="p_name">
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="tQty" class="">Quantity</label>
                   <div class="">
                     <input type="number" class="form-control" id="tQty" name="t_qty">
+                    <small class="form-text text-muted">Enter appropriate quantity.</small>
                   </div>
                 </div>
                 <div class="form-group">
@@ -133,9 +121,9 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="tTo" class="">To</label>
+                  <label for="ptTo" class="">To</label>
                   <div class="">
-                    <select class="form-control" id="tTo" name="t_to">
+                    <select class="form-control" id="ptTo" name="t_to">
                       {% for warehouse in warehouses %}
                       <option value="{{ warehouse['wid'] }}">{{ warehouse['wname'] }} - {{ warehouse['wloc'] }}</option>
                       {% endfor %}

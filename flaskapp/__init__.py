@@ -1,8 +1,8 @@
 import os
 
-from flask import Flask, render_template, request, flash, g,  session, url_for, redirect
+from flask import Flask, render_template, request, flash, url_for, redirect
 
-from flaskapp.db import connect_db
+from flaskapp.db import connect_db, init_app, init_db
 
 def create_app(test_config = None):
 
@@ -33,16 +33,15 @@ def create_app(test_config = None):
     warehouses = db.execute('SELECT * FROM warehouses')
 
     if request.method == 'POST':
-      p_id = request.form['p_id']
       p_name = request.form['p_name']
       p_qty = request.form['p_qty']
 
       error = None
 
-      if db.execute('SELECT pid FROM products WHERE pid = ?', (p_id,)).fetchone() is not None:
+      if db.execute('SELECT pname FROM products WHERE pname = ?', (p_name,)).fetchone() is not None:
         error = 'Product already registered.'
       else:
-        db.execute('INSERT INTO products (pid, pname, pqty) VALUES (?, ?, ?)', (p_id, p_name, p_qty))
+        db.execute('INSERT INTO products (pname, pqty) VALUES (?, ?)', (p_name, p_qty))
         db.commit()
         return redirect(url_for('products'))
       
@@ -55,18 +54,18 @@ def create_app(test_config = None):
     db = connect_db()
 
     if request.method == 'POST':
-      p_id = request.form['p_id']
       p_name = request.form['p_name']
       p_qty = request.form['p_qty']
 
-      db.execute('UPDATE products SET pname = ?, pqty = ? WHERE pid = ?', (p_name, p_qty, p_id))
+      db.execute('UPDATE products SET pqty = ? WHERE pname = ?', (p_qty, p_name))
       db.commit()
       return redirect(url_for('products'))
 
   @app.route('/warehouses/', methods=('GET', 'POST'))
   def warehouses():
     db = connect_db()
-    warehouses = db.execute('SELECT w.wid, wname, wloc, pid, pqty FROM warehouses w LEFT JOIN warehouse_details wd ON w.wid = wd.wid')
+    warehouses = db.execute('SELECT * FROM warehouses')
+    warehouses_details = db.execute('SELECT w.wid, wname, wloc, pname, pqty FROM warehouses w LEFT JOIN warehouse_details wd ON w.wid = wd.wid')
 
     if request.method == 'POST':
       w_id = request.form['w_id']
@@ -84,7 +83,7 @@ def create_app(test_config = None):
       
       flash(error)
 
-    return render_template('warehouses.html', warehouses = warehouses)
+    return render_template('warehouses.html', warehouses_details = warehouses_details, warehouses = warehouses)
 
   @app.route('/warehouses/edit/', methods=['POST'])
   def editwarehouses():
@@ -107,38 +106,53 @@ def create_app(test_config = None):
     transfers = db.execute('SELECT * FROM transfers')
 
     if request.method == 'POST':
-      p_id = request.form['p_id']
+      p_name = request.form['p_name']
       t_qty = request.form['t_qty']
       t_to = request.form['t_to']
       t_from = request.form['t_from']
 
       if t_from == 'None':
-        db.execute('INSERT INTO transfers (tto, pid, tqty) VALUES (?, ?, ?)', (t_to, p_id, t_qty))
-        db.execute('UPDATE products SET pqty = pqty - ? WHERE pid = ?', (t_qty, p_id))
+        ex_qty = db.execute('SELECT pqty FROM products WHERE pname = ?', (p_name,)).fetchone()
 
-        if db.execute('SELECT * FROM warehouse_details WHERE wid = ? AND pid = ?', (t_to, p_id)).fetchone() is None:
-          db.execute('INSERT INTO warehouse_details (wid, pid, pqty) VALUES (?, ?, ?)', (t_to, p_id, t_qty))
+        if ex_qty['pqty'] < t_qty or t_qty < 0:
+          flash('Enter quantity less than or equal to available quantity.')
+          return redirect(url_for('products'))
         else:
-          db.execute('UPDATE warehouse_details SET pqty = pqty + ? WHERE wid = ? AND pid = ?', (t_qty, t_to, p_id))
-        
-        db.commit()
+          db.execute('INSERT INTO transfers (tto, pname, tqty) VALUES (?, ?, ?)', (t_to, p_name, t_qty))
+          db.execute('UPDATE products SET pqty = pqty - ? WHERE pname = ?', (t_qty, p_name))
+
+          if db.execute('SELECT * FROM warehouse_details WHERE wid = ? AND pname = ?', (t_to, p_name)).fetchone() is None:
+            db.execute('INSERT INTO warehouse_details (wid, pname, pqty) VALUES (?, ?, ?)', (t_to, p_name, t_qty))
+          else:
+            db.execute('UPDATE warehouse_details SET pqty = pqty + ? WHERE wid = ? AND pname = ?', (t_qty, t_to, p_name))
+          
+          db.commit()
+          return redirect(url_for('products'))
       else:
         w_id = request.form['w_id']
 
-        db.execute('INSERT INTO transfers (tfrom, tto, pid, tqty) VALUES (?, ?, ?)', (t_from, t_to, p_id, t_qty))
+        ex_qty = db.execute('SELECT pqty FROM warehouse_details WHERE wid = ?, pname = ?', (w_id, p_name)).fetchone()
 
-        if db.execute('SELECT * FROM warehouse_details WHERE wid = ? AND pid = ?', (t_to, p_id)).fetchone() is None:
-          db.execute('INSERT INTO warehouse_details (wid, pid, pqty) VALUES (?, ?, ?)', (t_to, p_id, t_qty))
+        if ex_qty['pqty'] < t_qty or t_qty < 0:
+          flash('Enter appropriate quantity.')
+          return redirect(url_for('warehouses'))
         else:
-          db.execute('UPDATE warehouse_details SET pqty = pqty + ? WHERE wid = ? AND pid = ?', (t_qty, t_to, p_id))
+          db.execute('INSERT INTO transfers (tfrom, tto, pname, tqty) VALUES (?, ?, ?, ?)', (w_id, t_to, p_name, t_qty))
 
+          if db.execute('SELECT * FROM warehouse_details WHERE wid = ? AND pname = ?', (t_to, p_name)).fetchone() is None:
+            db.execute('INSERT INTO warehouse_details (wid, pname, pqty) VALUES (?, ?, ?)', (t_to, p_name, t_qty))
+            db.execute('UPDATE warehouse_details SET pqty = pqty - ? WHERE wid = ? AND pname = ?', (t_qty, w_id, p_name))
+          else:
+            db.execute('UPDATE warehouse_details SET pqty = pqty + ? WHERE wid = ? AND pname = ?', (t_qty, t_to, p_name))
+            db.execute('UPDATE warehouse_details SET pqty = pqty - ? WHERE wid = ? AND pname = ?', (t_qty, w_id, p_name))
 
-        flash('2nd case')
-
-      
+          db.commit()
+          return redirect(url_for('warehouses'))
+        
     return render_template('transfers.html', transfers = transfers)
 
-  from . import db
-  db.init_app(app)
+  init_app(app)
+  with app.app_context():
+    init_db()
   
   return app
